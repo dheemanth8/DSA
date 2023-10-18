@@ -1,32 +1,94 @@
-#include<stdio.h>
-#include<stdlib.h
-#include<string.h>
-struct stack
-{
-int top;
-int capacity;
-char* array;
-};
-struct stack* create stack(int capacity)
-{
-struct stack* stack123=(struct stack*)malloc(sizeof(struct stack));
-stack 1->top=-1;
-stack 1->capacity=capacity;
-stack->array =(char*)malloc(sizeof(stack 1->capacity* sizeof(char));
-return stack1;
+#include <stdio.h>
+#include <stdbool.h>
+#include <ctype.h>
+#define MAX_SIZE 100
+typedef struct {
+    char data[MAX_SIZE];
+    int top;
+} Stack;
+
+void initialize(Stack* stack) {
+    stack->top = -1;
 }
-int isEmpty (struct stack*stack1)
-{
-  return stack1->top==-1;
+void push(Stack* stack, char value) {
+    stack->data[++stack->top] = value;
 }
-void push(struct stack* stack1.char item)
-{
-  stack1 -> array[++stack 1-> top]=item;
+char pop(Stack* stack) {
+    return stack->data[stack->top--];
 }
-char pop(struct stack*stack 1)
-{
-  if(! isEmpty(stack))
-    return stack 1->array[stack 1->top--];
-return '10';
+bool isEmpty(Stack* stack) {
+    return stack->top == -1;
+}
+int evaluatePostfixExpression(const char* expression) {
+    Stack stack;
+    initialize(&stack);
+
+    for (int i = 0; expression[i] != '\0'; i++) {
+        if (isdigit(expression[i])) {
+            push(&stack, expression[i]);
+        } else if (expression[i] == ' ') {
+            continue;  // Ignore spaces
+        } else {
+            int operand2 = pop(&stack) - '0';
+            int operand1 = pop(&stack) - '0';
+            int result;
+
+            switch (expression[i]) {
+                case '+':
+                    result = operand1 + operand2;
+                    break;
+                case '-':
+                    result = operand1 - operand2;
+                    break;
+                case '*':
+                    result = operand1 * operand2;
+                    break;
+                case '/':
+                    result = operand1 / operand2;
+                    break;
+            }
+            push(&stack, result + '0');
+        }
+    }
+    return pop(&stack) - '0';
+}
+bool isBracketMatch(const char* expression) {
+    Stack stack;
+    initialize(&stack);
+
+    for (int i = 0; expression[i] != '\0'; i++) {
+        if (expression[i] == '(') {
+            push(&stack, '(');
+        } else if (expression[i] == ')') {
+            if (isEmpty(&stack)) {
+                return false;
+            }
+            pop(&stack);
+        }
+    }
+
+    return isEmpty(&stack);
+}
+
+int main() {
+    char postfixExpression[MAX_SIZE];
+    printf("Enter a postfix expression: ");
+    scanf("%[^\n]", postfixExpression);
+    getchar(); // Consume the newline character
+
+    int result = evaluatePostfixExpression(postfixExpression);
+    printf("Postfix expression result: %d\n", result);
+
+    char bracketExpression[MAX_SIZE];
+    printf("Enter an expression with brackets: ");
+    scanf("%[^\n]", bracketExpression);
+    getchar(); // Consume the newline character
+
+    if (isBracketMatch(bracketExpression)) {
+        printf("Brackets are matched.\n");
+    } else {
+        printf("Brackets are not matched.\n");
+    }
+    return 0;
 }
 
